@@ -63,22 +63,19 @@ class TaskViewsTests(TestCase):
     def test_pages_uses_correct_template(self):
 
         templates_pages_names = {
-            "posts/index.html": reverse("posts:index"),
-            "posts/group_list.html": reverse(
+            reverse("posts:index"): "posts/index.html",
+            reverse(
                 "posts:group_posts", kwargs={"slug": self.group.slug}
-            ),
-            "posts/profile.html": reverse(
+            ): "posts/group_list.html",
+            reverse(
                 "posts:profile", kwargs={"username": self.author.username}
-            ),
-            "posts/post_detail.html": reverse(
+            ): "posts/profile.html",
+            reverse(
                 "posts:post_detail", kwargs={"post_id": self.post.id}
-            ),
-            "posts/create_post.html": reverse(
-                "posts:post_edit", kwargs={"post_id": self.post.id}
-            ),
-            "posts/create_post.html": reverse("posts:post_create"),
+            ): "posts/post_detail.html",
+            reverse("posts:post_create"): "posts/create_post.html",
         }
-        for template, reverse_name in templates_pages_names.items():
+        for reverse_name, template in templates_pages_names.items():
             with self.subTest(reverse_name=reverse_name):
                 response = self.authorized_client.get(reverse_name)
                 self.assertTemplateUsed(response, template)
@@ -88,9 +85,6 @@ class TaskViewsTests(TestCase):
         templates_paginator_names = {
             "posts/post_detail.html": reverse(
                 "posts:post_detail", kwargs={"post_id": self.post.id}
-            ),
-            "posts/create_post.html": reverse(
-                "posts:post_edit", kwargs={"post_id": self.post.id}
             ),
             "posts/create_post.html": reverse("posts:post_create"),
         }
