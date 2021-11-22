@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+
 from posts.models import Group, Post
 
 User = get_user_model()
@@ -19,12 +20,20 @@ class PostModelTest(TestCase):
             author=cls.user,
             text='Тестовая запись для проверки первых символов',
         )
+        cls.model_str = {
+            cls.group: cls.group.title,
+            cls.post: cls.post.text[:15],
+        }
 
     def test_models_have_correct_object_names(self):
         """Проверяем, что у моделей корректно работает __str__."""
-        group = PostModelTest.group
-        expected_object_name = group.title
-        self.assertEqual(expected_object_name, str(group))
-        post = PostModelTest.post
-        expected_object_symbols = post.text[:15]
-        self.assertEqual(expected_object_symbols, str(post))
+        for model, value in self.model_str.items():
+            with self.subTest(model=model):
+                act = str(model)
+                self.assertEqual(act, value)
+        '''self.group = PostModelTest.group
+        expected_object_name = self.group.title
+        self.assertEqual(expected_object_name, str(self.group))
+        self.post = PostModelTest.post
+        expected_object_symbols = self.post.text[:15]
+        self.assertEqual(expected_object_symbols, str(self.post))'''

@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+
 from posts.models import Group, Post
 
 User = get_user_model()
@@ -9,7 +10,6 @@ User = get_user_model()
 class TaskCreateFormTests(TestCase):
 
     def setUp(self):
-        # Создаем авторизованный клиент
         self.test_group = Group.objects.create(
             title='Тестовая группа',
             slug='test_slug'
@@ -17,10 +17,6 @@ class TaskCreateFormTests(TestCase):
         self.user = User.objects.create(username='test-user')
         self.authorized_client_author = Client()
         self.authorized_client_author.force_login(self.user)
-        self.post = Post.objects.create(
-            author=self.user,
-            text='тестовый текст',
-        )
 
     def test_create_post(self):
 
@@ -46,6 +42,10 @@ class TaskCreateFormTests(TestCase):
         self.assertEqual(latest_post.group, self.test_group)
 
     def test_post_edit(self):
+        self.post = Post.objects.create(
+            author=self.user,
+            text='тестовый текст',
+        )
         form_data = {
             'text': 'изменённый текст',
         }
@@ -54,5 +54,5 @@ class TaskCreateFormTests(TestCase):
             data=form_data,
             follow=True,
         )
-        edited_text = Post.objects.first()
-        self.assertEqual(edited_text.text, form_data['text'])
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.text, form_data['text'])

@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
+
 from posts.models import Group, Post
 
 User = get_user_model()
@@ -10,52 +11,52 @@ class StaticURLTests(TestCase):
     def setUp(self):
         # Устанавливаем данные для тестирования
         # Создаём экземпляр клиента. Он неавторизован.
-        self.guest_client = Client()
+        self.client = Client()
 
     def test_homepage(self):
-        # Создаем экземпляр клиента
-        self.guest_client = Client()
-        # Делаем запрос к главной странице и проверяем статус
-        response = self.guest_client.get("/")
+        # Делаем запрос к главной странице и проверяем статусA
+        response = self.client.get("/")
         # Утверждаем, что для прохождения теста код должен быть равен 200
         self.assertEqual(response.status_code, 200)
 
-    def test_about_author(self):
-        self.guest_client = Client()
-        response = self.guest_client.get("/about/author/")
+    '''def test_about_author(self):
+        self.client = Client()
+        response = self.client.get("/about/author/")
         self.assertEqual(response.status_code, 200)
 
     def test_about_tech(self):
-        self.guest_client = Client()
-        response = self.guest_client.get("/about/tech/")
-        self.assertEqual(response.status_code, 200)
+        self.client = Client()
+        response = self.client.get("/about/tech/")
+        self.assertEqual(response.status_code, 200)'''
 
 
 class TaskURLTests(TestCase):
-    def setUp(self):
-        self.author = User.objects.create(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.author = User.objects.create(
             username="test_name",
         )
 
-        self.group = Group.objects.create(
+        cls.group = Group.objects.create(
             title="Заголовок",
             slug="test_slug",
         )
 
-        self.post = Post.objects.create(
-            author=self.author,
+        cls.post = Post.objects.create(
+            author=cls.author,
             text="Текст, написанный для проверки",
-            group=self.group,
+            group=cls.group,
         )
-        self.guest_client = Client()
+        cls.guest_client = Client()
         # Создаем пользователя
-        self.user = User.objects.create_user(username="HasNoName")
+        cls.user = User.objects.create_user(username="HasNoName")
         # Создаем второй клиент
-        self.authorized_client = Client()
+        cls.authorized_client = Client()
         # Авторизуем пользователя
-        self.authorized_client.force_login(self.user)
-        self.authorized_client_author = Client()
-        self.authorized_client_author.force_login(self.author)
+        cls.authorized_client.force_login(cls.user)
+        cls.authorized_client_author = Client()
+        cls.authorized_client_author.force_login(cls.author)
 
     def test_urls_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
@@ -80,3 +81,21 @@ class TaskURLTests(TestCase):
             with self.subTest(adress=adress):
                 response = self.authorized_client_author.get(adress)
                 self.assertTemplateUsed(response, template)
+
+    def test_urls_for_all_users(self):
+        urls_and_response_statuses = {
+            reverse('posts:index'): 200,
+            reverse('posts:profile', kwargs={
+                'username': self.user.username
+            }): 200,
+            reverse('posts:group_posts', kwargs={
+                'slug': self.group.slug}): 200,
+            reverse('posts:post_detail',
+                    kwargs={'post_id': self.post.id}): 200,
+            '/unexisting_page/': 404,
+        }
+
+        for urls, statuses in urls_and_response_statuses.items():
+            with self.subTest(urls=urls):
+                response = self.client.get(urls)
+                self.assertEqual(response.status_code, statuses)
