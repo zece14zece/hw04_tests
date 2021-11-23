@@ -28,7 +28,6 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -137,4 +136,4 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
 PAGE_COUNT = 10
 
-#CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
+# CSRF_FAILURE_VIEW = 'core.views.csrf_failure'

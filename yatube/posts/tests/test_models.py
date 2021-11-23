@@ -31,4 +31,3 @@ class PostModelTest(TestCase):
             with self.subTest(model=model):
                 act = str(model)
                 self.assertEqual(act, value)
-
