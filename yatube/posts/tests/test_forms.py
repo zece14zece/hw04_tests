@@ -42,7 +42,7 @@ class TaskCreateFormTests(TestCase):
         self.assertEqual(latest_post.group, self.test_group)
 
     def test_post_edit(self):
-        self.post = Post.objects.create(
+        post_e = Post.objects.create(
             author=self.user,
             text='тестовый текст',
         )
@@ -50,9 +50,9 @@ class TaskCreateFormTests(TestCase):
             'text': 'изменённый текст',
         }
         self.authorized_client_author.post(
-            reverse('posts:post_edit', kwargs={'post_id': self.post.id}),
+            reverse('posts:post_edit', kwargs={'post_id': post_e.id}),
             data=form_data,
             follow=True,
         )
-        self.post.refresh_from_db()
-        self.assertEqual(self.post.text, form_data['text'])
+        post_e.refresh_from_db()
+        self.assertEqual(post_e.text, form_data['text'])

@@ -31,9 +31,4 @@ class PostModelTest(TestCase):
             with self.subTest(model=model):
                 act = str(model)
                 self.assertEqual(act, value)
-        '''self.group = PostModelTest.group
-        expected_object_name = self.group.title
-        self.assertEqual(expected_object_name, str(self.group))
-        self.post = PostModelTest.post
-        expected_object_symbols = self.post.text[:15]
-        self.assertEqual(expected_object_symbols, str(self.post))'''
+
