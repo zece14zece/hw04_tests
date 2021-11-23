@@ -115,9 +115,7 @@ class AnotherGroupTests(TestCase):
     def test_index_correct_context(self):
         response = self.guest_client.get(reverse("posts:index"))
         self.assertEqual(len(response.context["page_obj"]), 2)
-        self.assertEqual(response.context["page_obj"].count("value"), 0)
-        # .count выдает "0", как получить "2" не понятно,
-        # не понял даже задебажив
+        self.assertEqual(response.context["posts"].count(), 2)
 
     def test_group_list_correct_context(self):
         response = self.guest_client.get(
